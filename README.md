@@ -1,4 +1,4 @@
-##vue2+webpack+router项目构建（详细步骤）
+## vue2+webpack+router项目构建（详细步骤）
 ---
 
 ## 基础篇
@@ -27,7 +27,7 @@
 	`npm install --save-dev vue-router`
 
 
-###其他安装依赖
+### 其他安装依赖
 注：因之后在webpack配置过程中，考虑到其他方面，样式抽离、webpack.congfig合并、解决跨平台设置NODE_ENV的问题、按需加载等等添加了相关的依赖包。如：
 1. `cross-env`: 解决跨平台设置NODE_ENV的问题
 2. `extract-text-webpack-plugin`: 样式抽离
