@@ -23,7 +23,7 @@ export default {
   },
   methods: {
     clickHander(){
-      console.log('shan-er');
+      
     }
   }
 };

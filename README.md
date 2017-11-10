@@ -1,7 +1,7 @@
 ##vue2+webpack+router项目构建（详细步骤）
 ---
 
-## 基础篇
+## <font color="blue"> 基础篇-基本架构 </font>
 
 ### 创建项目
 1. 创建项目文件夹：如，vue2-webpack
@@ -62,3 +62,77 @@
 
 ### 打包
 	`npm run build`
+
+
+## <font color="blue"> 提升篇-添加eslint代码巡检 </font>
+
+添加代码巡检（即代码校验，eslint、jslint、jshint等）有两种方式，一种是写shell脚本，一种是安装pre-commit库。
+本项目中应该的是后者。
+
+### 安装流程（本次使用的是eslint校验）
+1. 全局安装eslint，并且安装其他巡检包
+	`npm i eslint -g`
+	`npm i eslint eslint-plugin-html babel-eslint --save-dev`
+2. eslint初始化，按项目或是编写风格回答相关问题，以完成初始化
+	`eslint --init`
+3. 编辑.eslintrc.js文件，定义相关校验规则
+4. 之后选择巡检方式
+#### 安装pre-commit库来添加代码巡检
+4.1. 安装pre-commit
+	`npm i pre-commit --save-dev`
+4.2. 在package.json文件中的scripts下增加相关命令，如：
+	`"lint": "eslint --ext .vue,.js ./src",`
+	`"fix": "eslint --fix --ext .vue,.js ./src",`
+4.3 在package.json文件中添加pre-commit参数，数组值为scripts中要执行的命令。
+	`"pre-commit": ["precommit-msg", "lint"],`
+
+#### 通过shell脚本的方式来添加代码巡检
+4.1 在vue2-webpack/.git/hooks下新建pre-commit钩子。
+4.2 编辑pre-commit文件，添加shell脚本。
+
+    #!/bin/sh
+
+    files=$(git diff --cached --name-only --diff-filter=ACM | grep "\.js$")
+
+    if [ "$files" = "" ]; then
+        exit 0
+    fi
+
+    pass=true
+
+    echo "pre-commit checks..."
+
+    for file in ${files}; do
+        flag=$file;
+        while read line
+        do
+            flag=`echo "$flag" | grep -v $line`
+            flag=$flag
+        done < '.eslintignore'
+
+        if [ "$flag" != "" ];then
+            echo "$flag"
+            result=$(eslint ${file})
+            if [ "$result" != "" ]; then
+                echo "\033[31mESLint Failed: ${file}\033[0m"
+                echo "$result"
+                pass=false
+            else
+                echo "\033[32mESLint OK: ${file}\033[0m"
+            fi
+        fi
+
+    done
+
+    echo "\nJavaScript validation complete\n"
+    if ! $pass; then
+        echo "\033[41mCHECKED FAILED:\033[0m Your commit contains files that should pass ESLint but do not. Please fix the ESLint errors and try again.\n"
+        exit 1
+    else
+        echo "\033[42mCHECKED SUCCEEDED\033[0m\n"
+        exit 0
+
+    fi
+
+
+作为混迹于码农界的造梦者，每一个人心底都有一颗梦想改变世界的心。江湖由我创，世界任我掌。
